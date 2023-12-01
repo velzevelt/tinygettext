@@ -20,8 +20,6 @@
 
 cmake_minimum_required(VERSION 3.0)
 
-include(mk/cmake/TinyCMMC.cmake)
-
 project(tinygettext VERSION "0.2.0")
 
 file(GLOB TINYGETTEXT_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} src/*.cpp)
@@ -36,7 +34,6 @@ set_target_properties(tinygettext PROPERTIES
 target_include_directories(tinygettext PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
-target_compile_options(tinygettext PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
 target_compile_definitions(tinygettext PRIVATE VERSION=${TINYGETTEXT_VERSION})
 
 if(TINYGETTEXT_WITH_SDL)
@@ -61,23 +58,5 @@ install(TARGETS tinygettext
   PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME})
 install(FILES ${tinygettext_BINARY_DIR}/tinygettext.pc
   DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
-
-# CMake integration
-tinycmmc_export_and_install_library(tinygettext)
-
-if(BUILD_TESTS)
-  foreach(TEST tinygettext_test po_parser_test)
-    add_executable(${TEST} test/${TEST}.cpp)
-    set_target_properties(${TEST} PROPERTIES
-      CXX_STANDARD 17
-      CXX_STANDARD_REQUIRED ON
-      CXX_EXTENSIONS OFF)
-    target_compile_options(${TEST} PRIVATE ${TINYCMMC_WARNINGS_CXX_FLAGS})
-    if(WIN32)
-      target_compile_definitions(${TEST} PRIVATE _CRT_SECURE_NO_WARNINGS)
-    endif()
-    target_link_libraries(${TEST} PRIVATE tinygettext)
-  endforeach(TEST)
-endif()
 
 # EOF #
